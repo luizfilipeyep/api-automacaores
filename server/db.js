@@ -21,24 +21,24 @@ app.use(express.json());
 
 // Endpoint para obter todos os usuários
 app.get("/getUsers", (req, res) => {
-  const SQL = "SELECT * FROM users;"
+  let SQL = "SELECT * FROM users;"
   db.query(SQL, (err, result) => {
     if (err) res.send({ msg: err })
     else res.send(result)
-  });
-});
+  })
+})
 
 // Endpoint para cadastrar novo usuário
 app.post("/post/newUser", (req, res) => {
   const { name } = req.body
 
-  const SQL = `INSERT INTO users ( name ) 
-               VALUES ( ? );`
+  let SQL = `INSERT INTO users ( name ) 
+             VALUES ( ? );`
 
   db.query(SQL, [name], (err, result) => {
     if (err) res.send({ msg: err })
     else res.send({ msg: "Usuário Cadastrado!" })
-  });
+  })
 });
 
 // Endpoint para controlar LEDs
