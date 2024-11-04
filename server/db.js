@@ -21,20 +21,23 @@ app.use(express.json());
 
 // Endpoint para obter todos os usuários
 app.get("/getUsers", (req, res) => {
-  const SQL = "SELECT * FROM users;";
+  const SQL = "SELECT * FROM users;"
   db.query(SQL, (err, result) => {
-    if (err) res.send({ msg: err });
-    else res.send(result);
+    if (err) res.send({ msg: err })
+    else res.send(result)
   });
 });
 
 // Endpoint para cadastrar novo usuário
 app.post("/post/newUser", (req, res) => {
-  const { name } = req.body;
-  const SQL = "INSERT INTO users ( name ) VALUES ( ? );";
+  const { name } = req.body
+
+  const SQL = `INSERT INTO users ( name ) 
+               VALUES ( ? );`
+
   db.query(SQL, [name], (err, result) => {
-    if (err) res.send({ msg: err });
-    else res.send({ msg: "Usuário Cadastrado!" });
+    if (err) res.send({ msg: err })
+    else res.send({ msg: "Usuário Cadastrado!" })
   });
 });
 
@@ -42,29 +45,24 @@ app.post("/post/newUser", (req, res) => {
 app.post("/control/led", async (req, res) => {
   const { idLed, status } = req.body;
 
-  
+  let SQL = `UPDATE led_status
+             SET status = ?
+             WHERE idLed = ?;`
 
-  const SQL = `
-      INSERT INTO led_status (idLed, status)
-      VALUES (?, ?)
-      ON DUPLICATE KEY UPDATE status = ?;`;
-  try {
-      await db.promise().query(SQL, [idLed, status, status]);
-      res.send(`LED: ${idLed} | STATUS: ${status}`);
-  } catch (err) {
-      console.error("Erro ao atualizar o status do LED:", err); // Isso imprime o erro no console
-      res.status(500).send({ msg: "Erro ao atualizar o status do LED", error: err });
-  }
+  db.query(SQL, [status, idLed], (err, result) => {
+    if (err) res.send({ msg: err })
+    else res.send({ msg: `LED: ${idLed} | STATUS: ${status}` })
+  })
 });
 
 // Endpoint para obter todos os LEDs
 app.get("/control/listLeds", (req, res) => {
-  const SQL = "SELECT * FROM led_status;";
+  let SQL = "SELECT * FROM led_status;"
 
   db.query(SQL, (err, results) => {
     if (err) {
-      console.error("Erro ao obter status dos LEDs:", err);
-      res.status(500).send({ msg: "Erro ao obter status dos LEDs" });
+      console.error("Erro ao obter status dos LEDs:", err)
+      res.status(500).send({ msg: "Erro ao obter status dos LEDs" })
     } else {
       res.send(results); // Envia o status de todos os LEDs
     }
