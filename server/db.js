@@ -1,17 +1,18 @@
 // 8800 -> mysql
 // 8080 -> servidor api
 
+require('dotenv').config()
 const express = require("express");
 const app = express();
 const mysql = require("mysql2");
 const cors = require("cors");
 
 const db = mysql.createPool({
-  host: "localhost",
-  port: 8800,
-  user: "root",
-  password: "",
-  database: "home"
+  host: process.env.HOST,
+  port: process.env.PORT,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE
 });
 
 
@@ -30,7 +31,7 @@ app.get("/getUsers", (req, res) => {
 // Endpoint para cadastrar novo usuário
 app.post("/post/newUser", (req, res) => {
   const { name } = req.body;
-  const SQL = "INSERT INTO users (name) VALUES (?);";
+  const SQL = "INSERT INTO users ( name ) VALUES ( ? );";
   db.query(SQL, [name], (err, result) => {
     if (err) res.send({ msg: err });
     else res.send({ msg: "Usuário Cadastrado!" });
@@ -40,6 +41,8 @@ app.post("/post/newUser", (req, res) => {
 // Endpoint para controlar LEDs
 app.post("/control/led", async (req, res) => {
   const { idLed, status } = req.body;
+
+  
 
   const SQL = `
       INSERT INTO led_status (idLed, status)
